@@ -8,6 +8,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.util.List;
+
 public class RecordController {
     @FXML
     private TextField txtNombre;
@@ -25,11 +27,13 @@ public class RecordController {
 
         //Validar que los datos esten bien diligenciados
 
-        estado = record.saveRecord(txtNombre.getText(),Integer.parseInt(txtPuntaje.getText()));
-        mostrarMensaje(estado);
+        //estado = record.saveRecord(txtNombre.getText(),Integer.parseInt(txtPuntaje.getText()));
+        estado = record.saveVariousRecord(txtNombre.getText(),Integer.parseInt(txtPuntaje.getText()));
+
+        mostrarMensaje(estado, "");
     }
 
-    private void mostrarMensaje(Estado estado){
+    private void mostrarMensaje(Estado estado, String salida){
         Alert alerta;
         switch(estado){
             case GUARDADO_OK:
@@ -52,14 +56,35 @@ public class RecordController {
                 break;
             case CARGADO_ERROR:
                 break;
+
+            case MOSTRAR_REGISTRO:
+                alerta = new Alert(Alert.AlertType.INFORMATION);
+                alerta.setTitle("Guardado exitoso");
+                alerta.setHeaderText("JUGADORES Y PUNTAJE");
+                alerta.setContentText(salida);
+                alerta.showAndWait();
+                limpiarTextField();
+
+                break;
         }
     }
     @FXML
     public void cargarDatos(){
-        RecordJugador recordJugador=record.loadRecord();
+        /*RecordJugador recordJugador=record.loadRecord();
         txtNombre.setText(recordJugador.getNombre());
-        txtPuntaje.setText(Integer.toString(recordJugador.getPuntaje()));
+        txtPuntaje.setText(Integer.toString(recordJugador.getPuntaje()));*/
+        List<RecordJugador> registros = record.loadVariousRecord();
+        String salida = "Jugador - Puntaje";
+
+        for(RecordJugador recordJugador : registros){
+            salida += "\n" + recordJugador.getNombre()+" - " + recordJugador.getPuntaje();
+
+
+        }
+        mostrarMensaje(Estado.MOSTRAR_REGISTRO, salida);
     }
+
+
 
     private void limpiarTextField(){
         txtNombre.clear();
